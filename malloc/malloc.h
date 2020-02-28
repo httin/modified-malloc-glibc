@@ -51,7 +51,7 @@ extern void tinht25(void) __THROW;
                           const char* file, 
                           int line) __THROW __attribute_malloc__ __wur;
     #define malloc(size) \
-        malloc_t ((size), __FILE__, __LINE__);
+        malloc_t((size), __FILE__, __LINE__)
   #endif
 #endif
 

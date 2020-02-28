@@ -472,9 +472,11 @@ extern void *malloc_t (size_t __size,
 #else
   #ifndef __TIN_MALLOC
   #define __TIN_MALLOC
-extern void *malloc_t (size_t __size, const char* file, int line) __THROW __attribute_malloc__ __wur;
+extern void *malloc_t (size_t __size, 
+                      const char* file, 
+                      int line) __THROW __attribute_malloc__ __wur;
 #define malloc(size) \
-    malloc_t ((size), __FILE__, __LINE__);
+    malloc_t ((size), __FILE__, __LINE__)
   #endif
 #endif
 

@@ -2908,7 +2908,6 @@ __tin_malloc (size_t bytes, const char* file, int line)
   char buf[32] = {0};
   int i;
 
-//  fprintf(stderr, "Inside %s:%s:%d\n", __FUNCTION__, file, line);
   sprintf(buf, "%s:%d", file, line);
   bytes += 32;
 
@@ -2917,6 +2916,7 @@ __tin_malloc (size_t bytes, const char* file, int line)
   if (__builtin_expect (hook != NULL, 0)) // only in the first malloc
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
+  //fprintf(stderr, "Inside %s:[%s]\n", __FUNCTION__, buf);
   arena_get (ar_ptr, bytes);
 
   victim = _int_malloc (ar_ptr, bytes);
@@ -2955,6 +2955,8 @@ __libc_malloc (size_t bytes)
     = atomic_forced_read (__malloc_hook);
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
+
+  //fprintf(stderr, "Inside %s, %ld\n", __FUNCTION__, bytes);
 
   arena_get (ar_ptr, bytes);
 
@@ -4768,7 +4770,7 @@ __malloc_stats (void)
       memset (&mi, 0, sizeof (mi));
       (void) mutex_lock (&ar_ptr->mutex);
       int_mallinfo (ar_ptr, &mi);
-      fprintf (stderr, "\n+ Arena %d: %p\n", i, ar_ptr);
+      fprintf (stderr, "+++ Arena %d: %p\n", i, ar_ptr);
       fprintf (stderr, "system bytes     = %10u\n", (unsigned int) mi.arena);
       fprintf (stderr, "in use bytes     = %10u\n", (unsigned int) mi.uordblks);
 #if MALLOC_DEBUG == 0
@@ -4950,7 +4952,7 @@ void __dump_inuse_chunk (FILE *fp)
   /* traversing every arena */
   for (i = 0, ar_ptr = &main_arena;; i++)
   {
-    fprintf(fp, "Arena %d:\n", i);
+    fprintf(fp, "ARENA %d:\n", i);
     (void) mutex_lock (&ar_ptr->mutex);
     
     /* with an thread arena, we get its top-chunk to find the 'last heap'
@@ -4975,20 +4977,20 @@ void __dump_inuse_chunk (FILE *fp)
           {
             if (p == top (heap->ar_ptr))
               {
-                fprintf (fp, "chunk %p size 0x%lx (top)\n", 
+                fprintf (fp, "\tchunk %p size 0x%lx (top)\n", 
                   p, (long) p->size);
                 break;
               }
             else if (p->size == (0 | PREV_INUSE))
               {
-                fprintf (fp, "chunk %p size 0x%lx (fence)\n",
+                fprintf (fp, "\tchunk %p size 0x%lx (fence)\n",
                   p, (long) p->size);
                 break;
               }
             else if (inuse (p)) 
               {
                 mem = chunk2mem (p);
-                fprintf (fp, "[%s] chunk %p size 0x%lx\n",
+                fprintf (fp, "\t[%s] chunk %p size 0x%lx\n",
                   (char*)(mem + musable(mem) - 32), p, (long) p->size);
               } 
           }
@@ -5001,20 +5003,20 @@ void __dump_inuse_chunk (FILE *fp)
         {
           if (p == top (ar_ptr))
             {
-              fprintf (fp, "chunk %p size 0x%lx (top)\n", 
+              fprintf (fp, "\tchunk %p size 0x%lx (top)\n", 
                 p, (long) p->size);
               break;
             }
           else if (p->size == (0 | PREV_INUSE))
             {
-              fprintf (fp, "chunk %p size 0x%lx (fence)\n",
+              fprintf (fp, "\tchunk %p size 0x%lx (fence)\n",
                 p, (long) p->size);
               break;
             }
           else if (inuse (p)) 
             {
               mem = chunk2mem (p);
-              fprintf (fp, "[%s] chunk %p size 0x%lx\n",
+              fprintf (fp, "\t[%s] chunk %p size 0x%lx\n",
                 (char*)(mem + musable(mem) - 32), p, (long) p->size);
             } 
 
@@ -5042,7 +5044,7 @@ void __tinht25 (void)
 
   for (i = 0, ar_ptr = &main_arena;; i++)
     {
-      fprintf(stderr, "+ Arena %d:\n", i);
+      fprintf(stderr, "+ ARENA %d:\n", i);
       (void) mutex_lock (&ar_ptr->mutex);
       int_mallinfo (ar_ptr, &m);
       list_free_chunk (ar_ptr);
