@@ -22,8 +22,12 @@ Config the install directory as /usr/local/lib/glibc-install/, if you choose the
 ```
 ../glibc-2.22/configure --prefix=/usr/local/lib/glibc-install/ --enable-add-ons --with-tls --disable-werror
 ```
+Build the source code
+```
+make -j $(nproc)
+```
 Make install to the specific directory
 ```
-make -jn
+make install -j $(nproc)
 ```
 Now you have the secondary library in your system and you can build an application with linking to your new glibc.
