@@ -31,3 +31,13 @@ Make install to the specific directory
 make install -j $(nproc)
 ```
 Now you have the secondary library in your system and you can build an application with linking to your new glibc.
+
+## Exploiting the Glibc Malloc
+First of all, we do some research about data structure inside the glibc malloc, such as [Arena, Heap and Chunk](https://sourceware.org/glibc/wiki/MallocInternals). And [the malloc source code](https://elixir.bootlin.com/glibc/glibc-2.22/source/malloc/malloc.c#L2895), it's actually a wrapper function of [internal malloc](https://elixir.bootlin.com/glibc/glibc-2.22/source/malloc/malloc.c#L3312)
+
+The main arena and thread arena (with single heap segment) look like:
+![](https://docs.google.com/drawings/d/1367fdYcRTvkyfZ_s27yg6oJp5KYsVAuYqPf8szbRNc0/pub?w=960&h=720)
+
+A thread arena (with multiple heap segments) looks like:
+![](https://docs.google.com/drawings/d/150bTi0uScQlnABDImLYS8rWyL82mmfpMxzRbx-45UKw/pub?w=960&h=720)
+
